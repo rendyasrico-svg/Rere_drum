@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Rere Drum</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a1a">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="splash-screen" id="splash">
+    <img src="logo_screen.png" alt="Rere Drum">
+    <div class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+        </div>
+        <p class="loading-text">Memuat<span class="dots" id="loadingDots"></span></p>
+    </div>
+</div>
+
+<div class="rotate-message">
+    <p>🔄 Putar HP kamu ke mode landscape untuk memainkan drum ini</p>
+</div>
+
+<div class="stage" id="stage">
+
+<div class="topbar">
+    <div class="topbar-left">
+        <span class="menu-icon" id="menuIcon">&#9776;</span>
+        <span class="app-title">Rere Drum</span>
+    </div>
+    <div class="topbar-actions">
+        <span class="icon-btn" id="recordBtn" title="Rekam">&#9679;</span>
+        <span class="icon-btn" id="playBtn" title="Putar">&#9654;</span>
+        <input type="file" id="musicFileInput" accept="audio/*" style="display:none">
+    </div>
+</div>
+
+<div class="drum-kit">
+
+    <img src="assets/images/crash_cymbal.png" class="drum crash" id="crash">
+
+    <img src="assets/images/ride_cymbal.png" class="drum ride" id="ride">
+
+    <img src="assets/images/tom_drum.png" class="drum tom1" id="tom1">
+
+    <img src="assets/images/tom_drum.png" class="drum tom2" id="tom2">
+
+    <img src="assets/images/snare_drum.png" class="drum snare" id="snare">
+
+    <img src="assets/images/hi-hat_closed.png" class="drum hihat" id="hihat">
+
+    <img src="assets/images/hi-hat_open.png" class="drum hihatOpen" id="hihatOpen">
+
+    <img src="assets/images/floor_tom.png" class="drum floor" id="floor">
+
+    <img src="assets/images/bass_kick.png" class="drum kick" id="kick">
+
+</div>
+
+</div>
+
+<!-- === popup pilihan sumber suara (tengah layar) === -->
+<div class="modal-overlay" id="playModalOverlay"></div>
+<div class="play-modal" id="playModal">
+    <div class="play-modal-option" data-mode="record">Putar Rekaman</div>
+    <div class="play-modal-option" data-mode="music">Putar Musik dari HP</div>
+</div>
+
+<!-- === overlay transparan di belakang panel pengaturan === -->
+<div class="overlay" id="overlay"></div>
+
+<!-- === panel pengaturan === -->
+<div class="settings-panel" id="settingsPanel">
+    <h2>Pengaturan</h2>
+
+    <div class="setting-item">
+        <label for="volumeRange">Volume</label>
+        <input type="range" id="volumeRange" min="0" max="1" step="0.1" value="1">
+    </div>
+
+    <div class="setting-item">
+        <label for="vibrateToggle">Getar saat ketuk</label>
+        <label class="switch">
+            <input type="checkbox" id="vibrateToggle" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="setting-item">
+        <label>Tema</label>
+        <div class="custom-select" id="themeSelect">
+            <button type="button" class="select-btn" data-value="dark">Gelap</button>
+            <div class="select-options">
+                <div class="select-option selected" data-value="dark">Gelap</div>
+                <div class="select-option" data-value="light">Terang</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-item">
+        <label>Preset Suara</label>
+        <div class="custom-select" id="soundPreset">
+            <button type="button" class="select-btn" data-value="">Standard</button>
+            <div class="select-options">
+                <div class="select-option selected" data-value="">Standard</div>
+                <div class="select-option" data-value="electronic/">Elektronik</div>
+                <div class="select-option" data-value="acoustic/">Akustik</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-item about-item">
+        <p class="about-text">Rere Drum<br>versi 1.0.0<br>by Rere Studio</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
