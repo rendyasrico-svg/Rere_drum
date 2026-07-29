@@ -1,11 +1,11 @@
 {
-  "id": "./index.html",
+  "id": "./",
   "name": "Rere Drum",
   "short_name": "Rere Drum",
   "description": "Aplikasi drum kit interaktif oleh Rere Studio",
   "lang": "id",
   "dir": "ltr",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",
