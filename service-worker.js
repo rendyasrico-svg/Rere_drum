@@ -1,19 +1,15 @@
 const CACHE_NAME = "rere-drum-v3";
 
-const ASSETS = [
+const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
   "./script.js",
   "./manifest.json",
-
-  // Icon & logo
   "./logo.png",
   "./logo_screen.png",
   "./icon-192.png",
   "./icon-512.png",
-
-  // Images
   "./assets/images/crash_cymbal.png",
   "./assets/images/ride_cymbal.png",
   "./assets/images/tom_drum.png",
@@ -22,8 +18,6 @@ const ASSETS = [
   "./assets/images/hi-hat_open.png",
   "./assets/images/floor_tom.png",
   "./assets/images/bass_kick.png",
-
-  // Sounds
   "./assets/sounds/crash.mp3",
   "./assets/sounds/ride.mp3",
   "./assets/sounds/tom.mp3",
@@ -34,147 +28,60 @@ const ASSETS = [
   "./assets/sounds/hihat_closed.mp3"
 ];
 
-
-// =====================================================
-// INSTALL
-// =====================================================
-
-self.addEventListener("install", event => {
-
-  console.log("Rere Drum Service Worker: INSTALL");
-
+// simpan semua aset ke cache begitu service worker terpasang
+self.addEventListener("install", (event)=>{
   event.waitUntil(
-
-    caches.open(CACHE_NAME).then(async cache => {
-
-      for (const asset of ASSETS) {
-
-        try {
-
-          await cache.add(asset);
-
-          console.log("Berhasil cache:", asset);
-
-        } catch (error) {
-
-          console.warn("Gagal cache:", asset);
-
-        }
-
-      }
-
-    })
-
-  );
-
-  // Langsung aktif tanpa menunggu tab lama ditutup
-  self.skipWaiting();
-
-});
-
-
-// =====================================================
-// ACTIVATE
-// =====================================================
-
-self.addEventListener("activate", event => {
-
-  console.log("Rere Drum Service Worker: ACTIVATE");
-
-  event.waitUntil(
-
-    caches.keys().then(cacheNames => {
-
+    caches.open(CACHE_NAME).then(cache=>{
+      // addAll akan gagal semua kalau ada 1 file yang 404,
+      // jadi ditangani satu-satu supaya file lain tetap ke-cache
       return Promise.all(
-
-        cacheNames.map(cacheName => {
-
-          if (cacheName !== CACHE_NAME) {
-
-            console.log("Menghapus cache lama:", cacheName);
-
-            return caches.delete(cacheName);
-
-          }
-
-        })
-
+        urlsToCache.map(url=>
+          cache.add(url).catch(err=>console.log("Gagal cache:", url, err))
+        )
       );
-
     })
-
   );
+  self.skipWaiting();
+});
 
-  // Mengambil kontrol halaman yang sedang terbuka
+// bersihkan cache versi lama kalau ada update
+self.addEventListener("activate", (event)=>{
+  event.waitUntil(
+    caches.keys().then(keys=>
+      Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))
+    )
+  );
   self.clients.claim();
-
 });
 
+// file INTI (html/css/js/manifest) -> selalu coba ambil versi TERBARU
+// dulu dari internet, biar update kode langsung kepakai. Kalau lagi
+// offline, baru fallback ke versi cache.
+//
+// aset gambar & suara -> cache-first, karena jarang berubah dan
+// biar buka lebih cepat + tetap jalan offline.
+self.addEventListener("fetch", (event)=>{
+  const url = event.request.url;
+  const isCoreFile =
+    event.request.mode === "navigate" ||
+    url.endsWith(".html") ||
+    url.endsWith(".css") ||
+    url.endsWith(".js") ||
+    url.endsWith("manifest.json");
 
-// =====================================================
-// FETCH
-// =====================================================
-
-self.addEventListener("fetch", event => {
-
-  // Hanya menangani request GET
-  if (event.request.method !== "GET") {
-    return;
+  if(isCoreFile){
+    event.respondWith(
+      fetch(event.request)
+        .then(res=>{
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then(cache=>cache.put(event.request, resClone));
+          return res;
+        })
+        .catch(()=>caches.match(event.request))
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then(cached=>cached || fetch(event.request))
+    );
   }
-
-  event.respondWith(
-
-    fetch(event.request)
-
-      .then(response => {
-
-        // Jika internet berhasil,
-        // simpan versi terbaru ke cache.
-
-        if (
-          response &&
-          response.status === 200 &&
-          response.type === "basic"
-        ) {
-
-          const responseClone = response.clone();
-
-          caches.open(CACHE_NAME).then(cache => {
-
-            cache.put(event.request, responseClone);
-
-          });
-
-        }
-
-        return response;
-
-      })
-
-      .catch(() => {
-
-        // Kalau internet tidak tersedia,
-        // ambil dari cache.
-
-        return caches.match(event.request);
-
-      })
-
-  );
-
-});
-
-
-// =====================================================
-// MESSAGE
-// =====================================================
-
-self.addEventListener("message", event => {
-
-  if (event.data === "SKIP_WAITING") {
-
-    self.skipWaiting();
-
-  }
-
 });
