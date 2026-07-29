@@ -123,16 +123,5 @@
 
 <script src="script.js"></script>
 
-<!-- === pendaftaran service worker, wajib supaya PWA bisa diinstal === -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then((reg) => console.log('Service Worker terdaftar:', reg.scope))
-      .catch((err) => console.error('Service Worker gagal daftar:', err));
-  });
-}
-</script>
-
 </body>
 </html>
